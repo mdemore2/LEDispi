@@ -1,4 +1,6 @@
+import PIL
 from FlightRadar24.api import FlightRadar24API
+from src.show import Show
 from src.config import bounds_str
 
 
@@ -13,4 +15,8 @@ class Flights:
             details = self._fr.get_flight_details(flight.id)
             flight.set_flight_details(details)
         return flights
+
+    def build_img(self):
+        pass
+
 

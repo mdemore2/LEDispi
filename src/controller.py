@@ -1,9 +1,11 @@
 import asyncio
 import glob
 from datetime import datetime, timedelta
+from src.show import Show
 from src.display import Display
 from src.flights import Flights
 from src.messages import Messages
+
 
 class Controller:
     def __init__(self) -> None:
@@ -21,15 +23,19 @@ class Controller:
                 msg_list = self._msgs.get_messages()
                 if msg_list:
                     for msg in msg_list:
-                        self._display.send_text(msg)
+                        if msg.type == 'text':
+                            self._display.send_text(msg.value)
+                        elif msg.type == 'image':
+                            self._display.send_image(msg.value)
                         await asyncio.sleep(60)
             elif self._last_poll_flight + self._flight_wait < datetime.utcnow():
                 flight_list = self._flights.get_flights()
                 if flight_list:
                     for flight in flight_list:
-                        #TODO: build arrival/departure image
-                        self._display.send_image()
+                        if flight.type == 'text':
+                            self._display.send_text(flight.value)
+                        elif flight.type == 'image':
+                            self._display.send_image(flight.value)
                         await asyncio.sleep(60)
             else:
                 await asyncio.sleep(60)
-            

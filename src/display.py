@@ -19,7 +19,7 @@ class Display:
         self._font.LoadFont()
         self._text_color = graphics.Color(255, 255, 0)
 
-        self._duration = timedelta(seconds=30)
+        self._duration = timedelta(seconds=60)
 
     def send_text(self, text: str):
         offscreen_canvas = self._matrix.CreateFrameCanvas()
@@ -44,6 +44,7 @@ class Display:
         while (start + self._duration) < datetime.utcnow():
             time.sleep(5)
         #TODO: wipe screen
+        #TODO: delete img
 
 
 
