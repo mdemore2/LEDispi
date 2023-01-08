@@ -132,4 +132,4 @@ dmypy.json
 .idea/
 
 #Private stuff
-config.py
+src/config.py

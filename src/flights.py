@@ -1,5 +1,5 @@
 from FlightRadar24.api import FlightRadar24API
-from config import bounds_str
+from src.config import bounds_str
 
 
 class FRapi:
