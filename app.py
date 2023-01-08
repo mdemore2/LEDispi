@@ -1,9 +1,9 @@
-from src.flights import FRapi
+from src.flights import Flights
 from src.messages import Messages
 
 if __name__ == "__main__":
-    fr = FRapi()
-    flights = fr.ret_flights()
+    fr = Flights()
+    flights = fr.get_flights()
     print(flights)
     for flight in flights:
         print(flight.origin_airport_name)
