@@ -128,8 +128,10 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-#Pycharm stuff
+#IDE stuff
 .idea/
+.vscode/
 
 #Private stuff
 src/config.py
+
