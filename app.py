@@ -1,4 +1,5 @@
 from src.flights import FRapi
+from src.messages import Messages
 
 if __name__ == "__main__":
     fr = FRapi()
@@ -22,3 +23,7 @@ if __name__ == "__main__":
     # AIRCRAFT:
     # REGISTRATION:
     # ALTITUDE:
+
+    msgs = Messages()
+    info = msgs.get_messages()
+    print(info)

@@ -1,5 +1,5 @@
 from pushbullet import Pushbullet
-from config import pb_key
+from src.config import pb_key
 
 
 class Messages:
@@ -9,4 +9,5 @@ class Messages:
     def get_messages(self):
         pushes = self._pb.get_pushes()
         self._pb.delete_pushes()
-        return pushes
+        msgs = [x['body'] for x in pushes]
+        return msgs
