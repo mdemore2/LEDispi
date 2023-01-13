@@ -14,7 +14,7 @@ if __name__ == "__main__":
         print(flight.registration)
 
     # TODO: make image
-    # base size 1530x720px
+    # base size 1280x720px
     # arrivals or departures img centered across top
     # text below with following headers in order
     # ORIGIN:
