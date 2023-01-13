@@ -59,7 +59,7 @@ class Flights:
                 draw.text((self._w_buffer, h_pos), f"{item[0].upper()}:    {item[1]}", font=self._font, fill=self._font_color)
                 h_pos += self._font_size
             path = f'../images/{flight.number}.png'
-            im.save('path', quality=95)
+            im.save('path')
             flight_imgs.append(Show('image', path))
 
         return flight_imgs
