@@ -17,7 +17,7 @@ class Display:
         self._matrix = RGBMatrix(options=self._options)
 
         self._font = graphics.Font()
-        self._font.LoadFont('rpi-rgb-led-matrix/fonts/7x13.bdf')
+        self._font.LoadFont('rpi-rgb-led-matrix/fonts/4x6.bdf')
         self._text_color = graphics.Color(255, 255, 0)
 
         self._duration = timedelta(seconds=15)
@@ -37,6 +37,30 @@ class Display:
             time.sleep(0.05)
             offscreen_canvas = self._matrix.SwapOnVSync(offscreen_canvas)
         self._matrix.Clear()
+
+    def send_flight(self, flight):
+        canvas = self._matrix
+        h_font_size = 6
+        h_buffer = 1
+        w_buffer = 2
+        post_dict = {'airline': flight.airline_short_name,
+                     'flight number': flight.number,
+                     'aircraft': flight.aircraft_model,
+                     'altitude': flight.altitude,
+                     'registration': flight.registration}
+        if flight.origin_airport_icao == self._airport_icao:
+            flight_dict = {'destination': flight.destination_airport_name}
+        elif flight.destination_airport_icao == self._airport_icao:
+            flight_dict = {'origin': flight.origin_airport_name}
+        else:
+            flight_dict = {'origin': flight.origin_airport_name,
+                           'destination': flight.destination_airport_name}
+        flight_dict.update(post_dict)
+        h_pos = 0
+        for item in flight_dict.items():
+            h_pos += h_buffer
+            graphics.DrawText(canvas, self._font, w_buffer, h_pos, self._text_color, f"{item[0].upper()}:    {item[1]}")
+            h_pos += h_font_size
 
     def send_image(self, path: str):
         image = Image.open(path)
