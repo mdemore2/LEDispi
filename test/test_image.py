@@ -1,11 +1,11 @@
 from PIL import Image, ImageDraw, ImageFont
 
 if __name__ == "__main__":
-    bounds_width = 1280
-    bounds_height = 720
-    h_buffer = 25
-    w_buffer = 50
-    font_size = 48
+    bounds_width = 128
+    bounds_height = 64
+    h_buffer = 1
+    w_buffer = 2
+    font_size = 8
     font_color = (255, 243, 1)
     font = ImageFont.truetype('../lib/Gidole-Regular.ttf', font_size)
     test_flight = {'origin': "Hartsfield Atlanta", 'airline': 'United', 'number': 'UA2073', 'aircraft': 'Airbus A320',

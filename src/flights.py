@@ -10,11 +10,11 @@ class Flights:
         self._fr = FlightRadar24API()
         self._bounds = bounds_str
         self._airport_icao = airport_icao
-        self._img_width = 1280
-        self._img_height = 720
-        self._h_buffer = 25
-        self._w_buffer = 50
-        self._font_size = 48
+        self._img_width = 128
+        self._img_height = 64
+        self._h_buffer = 1
+        self._w_buffer = 2
+        self._font_size = 8
         self._font_color = (255, 243, 1)
         self._font = ImageFont.truetype('lib/Gidole-Regular.ttf', self._font_size)
 
