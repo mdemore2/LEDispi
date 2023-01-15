@@ -19,7 +19,7 @@ class Messages:
             elif 'file_type' in push:
                 file_type = push['file_type'].split('/')
                 if 'image' == file_type[0]:
-                    filepath = f'image_{uuid.uuid4()}.{file_type[-1]}'
+                    filepath = f'images/image_{uuid.uuid4()}.{file_type[-1]}'
                     r = requests.get(push['file_url'])
                     open(filepath, 'wb').write(r.content)
                     msgs.append(Show('image', filepath))

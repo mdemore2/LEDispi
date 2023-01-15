@@ -16,13 +16,16 @@ class Flights:
         self._w_buffer = 50
         self._font_size = 48
         self._font_color = (255, 243, 1)
-        self._font = ImageFont.truetype('../lib/Gidole-Regular.ttf', self._font_size)
+        self._font = ImageFont.truetype('lib/Gidole-Regular.ttf', self._font_size)
 
     def get_flights(self) -> list[Show]:
         flights = self._fr.get_flights(bounds=self._bounds)
+        #flights = self._fr.get_flights(airline='AZU')
+        print(flights)
         for flight in flights:
             details = self._fr.get_flight_details(flight.id)
             flight.set_flight_details(details)
+        flights = [flights[0]] #TODO: remove after testing
         flight_imgs = self.build_img(flights)
         return flight_imgs
 
@@ -36,13 +39,13 @@ class Flights:
                          'altitude': flight.altitude,
                          'registration': flight.registration}
             if flight.origin_airport_icao == self._airport_icao:
-                header = Image.open('../lib/departures.png')
+                header = Image.open('lib/departures.png')
                 flight_dict = {'destination': flight.destination_airport_name}
             elif flight.destination_airport_icao == self._airport_icao:
-                header = Image.open('../lib/arrivals.png')
+                header = Image.open('lib/arrivals.png')
                 flight_dict = {'origin': flight.origin_airport_name}
             else:
-                header = Image.open('../lib/flyover.png')
+                header = Image.open('lib/flyover.png')
                 flight_dict = {'origin': flight.origin_airport_name,
                                'destination': flight.destination_airport_name}
 
@@ -58,7 +61,8 @@ class Flights:
                 h_pos += self._h_buffer
                 draw.text((self._w_buffer, h_pos), f"{item[0].upper()}:    {item[1]}", font=self._font, fill=self._font_color)
                 h_pos += self._font_size
-            path = f'../images/{flight.number}.png'
+            flight_num = flight.number.replace('/', '')
+            path = f'images/{flight.number}.png'
             im.save(path)
             flight_imgs.append(Show('image', path))
 
