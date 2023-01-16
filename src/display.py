@@ -44,23 +44,29 @@ class Display:
         h_buffer = 1
         w_buffer = 2
         post_dict = {'airline': flight.airline_short_name,
-                     'flight number': flight.number,
-                     'aircraft': flight.aircraft_model,
-                     'altitude': flight.altitude,
-                     'registration': flight.registration}
-        if flight.origin_airport_icao == self._airport_icao:
-            flight_dict = {'destination': flight.destination_airport_name}
-        elif flight.destination_airport_icao == self._airport_icao:
+                     'flt#': flight.number,
+                     'acft': flight.aircraft_model,
+                     'alt': flight.altitude,
+                     'reg': flight.registration}
+        if flight.origin_airport_icao == '':
+            flight_dict = {'dest': flight.destination_airport_name}
+        elif flight.destination_airport_icao == '':
             flight_dict = {'origin': flight.origin_airport_name}
         else:
             flight_dict = {'origin': flight.origin_airport_name,
-                           'destination': flight.destination_airport_name}
+                           'dest': flight.destination_airport_name}
         flight_dict.update(post_dict)
         h_pos = 0
         for item in flight_dict.items():
-            h_pos += h_buffer
-            graphics.DrawText(canvas, self._font, w_buffer, h_pos, self._text_color, f"{item[0].upper()}:    {item[1]}")
-            h_pos += h_font_size
+            if item[1] != 'N/A':
+                h_pos += h_buffer
+                graphics.DrawText(canvas, self._font, w_buffer, h_pos, self._text_color, f"{item[1]}")
+                h_pos += h_font_size
+        start = datetime.utcnow()
+        while (start + self._duration) > datetime.utcnow():
+            time.sleep(5)
+        #TODO: wipe screen
+        self._matrix.Clear()
 
     def send_image(self, path: str):
         image = Image.open(path)

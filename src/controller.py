@@ -35,10 +35,11 @@ class Controller:
                 flight_list = self._flights.get_flights()
                 if flight_list:
                     for flight in flight_list:
-                        if flight.type == 'text':
-                            self._display.send_text(flight.value)
-                        elif flight.type == 'image':
-                            self._display.send_image(flight.value)
+                        self._display.send_flight(flight)
+                        #if flight.type == 'text':
+                        #    self._display.send_text(flight.value)
+                        #elif flight.type == 'image':
+                        #    self._display.send_image(flight.value)
                         await asyncio.sleep(15)
             else:
                 await asyncio.sleep(60)

@@ -10,8 +10,8 @@ class Flights:
         self._fr = FlightRadar24API()
         self._bounds = bounds_str
         self._airport_icao = airport_icao
-        self._img_width = 128
-        self._img_height = 64
+        self._img_width = 64
+        self._img_height = 32
         self._h_buffer = 1
         self._w_buffer = 2
         self._font_size = 8
@@ -21,11 +21,13 @@ class Flights:
     def get_flights(self) -> list[Show]:
         flights = self._fr.get_flights(bounds=self._bounds)
         #flights = self._fr.get_flights(airline='AZU')
+        flights = [flights[0]]
         print(flights)
         for flight in flights:
             details = self._fr.get_flight_details(flight.id)
             flight.set_flight_details(details)
-        flights = [flights[0]] #TODO: remove after testing
+        return flights
+        #flights = [flights[0]] #TODO: remove after testing
         flight_imgs = self.build_img(flights)
         return flight_imgs
 
@@ -39,30 +41,31 @@ class Flights:
                          'altitude': flight.altitude,
                          'registration': flight.registration}
             if flight.origin_airport_icao == self._airport_icao:
-                header = Image.open('lib/departures.png')
+                #header = Image.open('lib/departures.png')
                 flight_dict = {'destination': flight.destination_airport_name}
             elif flight.destination_airport_icao == self._airport_icao:
-                header = Image.open('lib/arrivals.png')
+                #header = Image.open('lib/arrivals.png')
                 flight_dict = {'origin': flight.origin_airport_name}
             else:
-                header = Image.open('lib/flyover.png')
+                #header = Image.open('lib/flyover.png')
                 flight_dict = {'origin': flight.origin_airport_name,
                                'destination': flight.destination_airport_name}
 
             flight_dict.update(post_dict)
-            width, height = header.size
-            h_to_w = height / width
-            header = header.resize((int(self._img_width * 0.5), int(self._img_width * 0.5 * h_to_w)))
-            im.paste(header, (int(self._img_width * 0.25), self._h_buffer))
+            #width, height = header.size
+            #h_to_w = height / width
+            #header = header.resize((int(self._img_width * 0.5), int(self._img_width * 0.5 * h_to_w)))
+            #im.paste(header, (int(self._img_width * 0.25), self._h_buffer))
 
             draw = ImageDraw.Draw(im)
-            h_pos = header.size[1] + self._h_buffer
+            #h_pos = header.size[1] + self._h_buffer
+            h_pos = self._h_buffer
             for item in flight_dict.items():
                 h_pos += self._h_buffer
                 draw.text((self._w_buffer, h_pos), f"{item[0].upper()}:    {item[1]}", font=self._font, fill=self._font_color)
                 h_pos += self._font_size
             flight_num = flight.number.replace('/', '')
-            path = f'images/{flight.number}.png'
+            path = f'images/{flight_num}.png'
             im.save(path)
             flight_imgs.append(Show('image', path))
 
