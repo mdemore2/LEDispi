@@ -18,7 +18,7 @@ class Flights:
         self._font_color = (255, 243, 1)
         self._font = ImageFont.truetype('lib/Gidole-Regular.ttf', self._font_size)
 
-    def get_flights(self) -> list[Show]:
+    def get_flights(self):
         flights = self._fr.get_flights(bounds=self._bounds)
         #flights = self._fr.get_flights(airline='AZU')
         flights = [flights[0]]
@@ -26,10 +26,20 @@ class Flights:
         for flight in flights:
             details = self._fr.get_flight_details(flight.id)
             flight.set_flight_details(details)
-        return flights
-        #flights = [flights[0]] #TODO: remove after testing
-        flight_imgs = self.build_img(flights)
-        return flight_imgs
+            post_dict = {'airline': flight.airline_short_name,
+                         'flt#': flight.number,
+                         'acft': flight.aircraft_model,
+                         'alt': flight.altitude,
+                         'reg': flight.registration}
+            if flight.origin_airport_icao == '':
+                flight_dict = {'dest': flight.destination_airport_name}
+            elif flight.destination_airport_icao == '':
+                flight_dict = {'origin': flight.origin_airport_name}
+            else:
+                flight_dict = {'origin': flight.origin_airport_name,
+                               'dest': flight.destination_airport_name}
+            flight_dict.update(post_dict)
+        return flight_dict
 
     def build_img(self, flights: list[FlightRadar24.flight]) -> list[Show]:
         flight_imgs = []
