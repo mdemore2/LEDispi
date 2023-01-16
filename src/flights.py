@@ -1,12 +1,14 @@
 from PIL import Image, ImageDraw, ImageFont
 import FlightRadar24.flight
 from FlightRadar24.api import FlightRadar24API
-from src.show import Show
+from src.show import Show, Content
+from src.display import Display
 from src.config import bounds_str, airport_icao
 
 
 class Flights:
-    def __init__(self):
+    def __init__(self, disp: Display):
+        self._display = disp
         self._fr = FlightRadar24API()
         self._bounds = bounds_str
         self._airport_icao = airport_icao
@@ -20,26 +22,27 @@ class Flights:
 
     def get_flights(self):
         flights = self._fr.get_flights(bounds=self._bounds)
-        #flights = self._fr.get_flights(airline='AZU')
-        flights = [flights[0]]
+        flights = flights[0] #TODO: remove after testing
+        show_list = []
         print(flights)
         for flight in flights:
             details = self._fr.get_flight_details(flight.id)
             flight.set_flight_details(details)
-            post_dict = {'airline': flight.airline_short_name,
+            post_dict = {'arln': flight.airline_short_name,
                          'flt#': flight.number,
                          'acft': flight.aircraft_model,
                          'alt': str(flight.altitude),
                          'reg': flight.registration}
-            if flight.origin_airport_icao == '':
+            if flight.origin_airport_icao == self._airport_icao:
                 flight_dict = {'dest': flight.destination_airport_name}
-            elif flight.destination_airport_icao == '':
-                flight_dict = {'origin': flight.origin_airport_name}
+            elif flight.destination_airport_icao == self._airport_icao:
+                flight_dict = {'orig': flight.origin_airport_name}
             else:
-                flight_dict = {'origin': flight.origin_airport_name,
+                flight_dict = {'orig': flight.origin_airport_name,
                                'dest': flight.destination_airport_name}
             flight_dict.update(post_dict)
-        return flight_dict
+            show_list.append(Content(flight_dict, self._display._matrix))
+        return show_list
 
     def build_img(self, flights: list[FlightRadar24.flight]) -> list[Show]:
         flight_imgs = []
@@ -51,24 +54,24 @@ class Flights:
                          'altitude': flight.altitude,
                          'registration': flight.registration}
             if flight.origin_airport_icao == self._airport_icao:
-                #header = Image.open('lib/departures.png')
+                header = Image.open('lib/departures.png')
                 flight_dict = {'destination': flight.destination_airport_name}
             elif flight.destination_airport_icao == self._airport_icao:
-                #header = Image.open('lib/arrivals.png')
+                header = Image.open('lib/arrivals.png')
                 flight_dict = {'origin': flight.origin_airport_name}
             else:
-                #header = Image.open('lib/flyover.png')
+                header = Image.open('lib/flyover.png')
                 flight_dict = {'origin': flight.origin_airport_name,
                                'destination': flight.destination_airport_name}
 
             flight_dict.update(post_dict)
-            #width, height = header.size
-            #h_to_w = height / width
-            #header = header.resize((int(self._img_width * 0.5), int(self._img_width * 0.5 * h_to_w)))
-            #im.paste(header, (int(self._img_width * 0.25), self._h_buffer))
+            width, height = header.size
+            h_to_w = height / width
+            header = header.resize((int(self._img_width * 0.5), int(self._img_width * 0.5 * h_to_w)))
+            im.paste(header, (int(self._img_width * 0.25), self._h_buffer))
 
             draw = ImageDraw.Draw(im)
-            #h_pos = header.size[1] + self._h_buffer
+            h_pos = header.size[1] + self._h_buffer
             h_pos = self._h_buffer
             for item in flight_dict.items():
                 h_pos += self._h_buffer

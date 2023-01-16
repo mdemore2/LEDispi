@@ -41,46 +41,29 @@ class Display:
             offscreen_canvas = self._matrix.SwapOnVSync(offscreen_canvas)
         self._matrix.Clear()
 
-    def send_flight(self, flight_dict):
+    def send_content(self, content):
         offscreen_canvas = self._matrix.CreateFrameCanvas()
-        h_pos = self._h_font_size
-        pages = 0
-        disp_dict = {f'page {str(pages)}': []}
-        for item in flight_dict.items():
-            if item[1] != 'N/A':
-                h_pos += self._h_buffer
-                if h_pos > offscreen_canvas.height:
-                    pages += 1
-                    disp_dict[f'page {str(pages)}'] = []
-                    h_pos = self._h_buffer + self._h_font_size
-                disp_dict[f'page {str(pages)}'].append((item[1], h_pos))
-                h_pos += self._h_font_size + (2*self._h_buffer)
-        for page in disp_dict.values():
+        for page in content.pages:
             start = datetime.utcnow()
-            h_pos = []
             w_pos = offscreen_canvas.width
             while (start + self._duration) > datetime.utcnow() or w_pos != 0:
-                len = []
                 offscreen_canvas.Clear()
-                for item, pos in page:
-                    h_pos.append(pos)
-                    len.append(graphics.DrawText(offscreen_canvas, self._font, w_pos, pos, self._text_color, item))
+                for text in page.text:
+                    graphics.DrawText(offscreen_canvas, self._font, w_pos, text.h_pos, self._text_color, text.msg)
                 w_pos -= 1
-                len = max(len)
-                if (w_pos + len) < 0:
+                if (w_pos + page.max_w_len) < 0:
                     w_pos = offscreen_canvas.width
 
                 time.sleep(0.05)
                 offscreen_canvas = self._matrix.SwapOnVSync(offscreen_canvas)
-            h_pos = max(h_pos)
+            h_pos = page.max_h_pos
             h_threshold = 0 - self._h_font_size
             page = [list(x) for x in page]
             while h_pos > h_threshold:
                 offscreen_canvas.Clear()
-                for item in page:
-                    item[1] -= 1
-                    graphics.DrawText(offscreen_canvas, self._font, w_pos, item[1], self._text_color, item[0])
-
+                for text in page.text:
+                    text.h_pos -= 1
+                    graphics.DrawText(offscreen_canvas, self._font, w_pos, text.h_pos, self._text_color, text.msg)
                 h_pos -= 1
                 time.sleep(0.05)
                 offscreen_canvas = self._matrix.SwapOnVSync(offscreen_canvas)
@@ -94,9 +77,7 @@ class Display:
         start = datetime.utcnow()
         while (start + self._duration) > datetime.utcnow():
             time.sleep(5)
-        #TODO: wipe screen
         self._matrix.Clear()
-        #TODO: delete img
         os.remove(path)
         
 
