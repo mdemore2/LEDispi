@@ -22,7 +22,7 @@ class Flights:
 
     def get_flights(self):
         flights = self._fr.get_flights(bounds=self._bounds)
-        flights = flights[0] #TODO: remove after testing
+        flights = [flights[0]] #TODO: remove after testing
         show_list = []
         print(flights)
         for flight in flights:
@@ -31,7 +31,7 @@ class Flights:
             post_dict = {'arln': flight.airline_short_name,
                          'flt#': flight.number,
                          'acft': flight.aircraft_model,
-                         'alt': str(flight.altitude),
+                         'alt': f'{str(flight.altitude)} ft',
                          'reg': flight.registration}
             if flight.origin_airport_icao == self._airport_icao:
                 flight_dict = {'dest': flight.destination_airport_name}
@@ -41,7 +41,7 @@ class Flights:
                 flight_dict = {'orig': flight.origin_airport_name,
                                'dest': flight.destination_airport_name}
             flight_dict.update(post_dict)
-            show_list.append(Content(flight_dict, self._display._matrix))
+            show_list.append(Show('content', Content(flight_dict, self._display._matrix)))
         return show_list
 
     def build_img(self, flights: list[FlightRadar24.flight]) -> list[Show]:

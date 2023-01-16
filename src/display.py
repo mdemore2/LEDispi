@@ -58,7 +58,6 @@ class Display:
                 offscreen_canvas = self._matrix.SwapOnVSync(offscreen_canvas)
             h_pos = page.max_h_pos
             h_threshold = 0 - self._h_font_size
-            page = [list(x) for x in page]
             while h_pos > h_threshold:
                 offscreen_canvas.Clear()
                 for text in page.text:
