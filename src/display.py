@@ -20,7 +20,7 @@ class Display:
         self._font.LoadFont('rpi-rgb-led-matrix/fonts/7x13.bdf')
         self._text_color = graphics.Color(255, 255, 0)
         self._h_font_size = 7
-        self._h_buffer = 2
+        self._h_buffer = 4
         self._w_buffer = 2
 
         self._duration = timedelta(seconds=30)
@@ -43,8 +43,7 @@ class Display:
 
     def send_flight(self, flight_dict):
         offscreen_canvas = self._matrix.CreateFrameCanvas()
-        w_pos = offscreen_canvas.width
-        h_pos = 0
+        h_pos = self._h_font_size
         pages = 0
         disp_dict = {f'page {str(pages)}': []}
         for item in flight_dict.items():
@@ -53,16 +52,19 @@ class Display:
                 if h_pos > offscreen_canvas.height:
                     pages += 1
                     disp_dict[f'page {str(pages)}'] = []
-                    h_pos = self._h_buffer
+                    h_pos = self._h_buffer + self._h_font_size
                 disp_dict[f'page {str(pages)}'].append((item[1], h_pos))
-                h_pos += self._h_font_size
-        for page in disp_dict:
+                h_pos += self._h_font_size + (2*self._h_buffer)
+        for page in disp_dict.values():
             start = datetime.utcnow()
-            while (start + self._duration) > datetime.utcnow() and w_pos > 0:
-                offscreen_canvas.Clear()
+            h_pos = []
+            w_pos = offscreen_canvas.width
+            while (start + self._duration) > datetime.utcnow() or w_pos != 0:
                 len = []
-                for item in page:
-                    len.append(graphics.DrawText(offscreen_canvas, self._font, w_pos, item[1], self._text_color, item[0]))
+                offscreen_canvas.Clear()
+                for item, pos in page:
+                    h_pos.append(pos)
+                    len.append(graphics.DrawText(offscreen_canvas, self._font, w_pos, pos, self._text_color, item))
                 w_pos -= 1
                 len = max(len)
                 if (w_pos + len) < 0:
@@ -70,10 +72,11 @@ class Display:
 
                 time.sleep(0.05)
                 offscreen_canvas = self._matrix.SwapOnVSync(offscreen_canvas)
+            h_pos = max(h_pos)
             h_threshold = 0 - self._h_font_size
+            page = [list(x) for x in page]
             while h_pos > h_threshold:
                 offscreen_canvas.Clear()
-                wid = []
                 for item in page:
                     item[1] -= 1
                     graphics.DrawText(offscreen_canvas, self._font, w_pos, item[1], self._text_color, item[0])

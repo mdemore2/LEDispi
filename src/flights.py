@@ -29,7 +29,7 @@ class Flights:
             post_dict = {'airline': flight.airline_short_name,
                          'flt#': flight.number,
                          'acft': flight.aircraft_model,
-                         'alt': flight.altitude,
+                         'alt': str(flight.altitude),
                          'reg': flight.registration}
             if flight.origin_airport_icao == '':
                 flight_dict = {'dest': flight.destination_airport_name}
