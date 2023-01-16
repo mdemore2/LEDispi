@@ -43,10 +43,11 @@ class Display:
 
     def send_content(self, content):
         offscreen_canvas = self._matrix.CreateFrameCanvas()
+        con_dur = self._duration / len(content.pages)
         for page in content.pages:
             start = datetime.utcnow()
             w_pos = offscreen_canvas.width
-            while (start + self._duration) > datetime.utcnow() or w_pos != 0:
+            while (start + con_dur) > datetime.utcnow() or w_pos != 0:
                 offscreen_canvas.Clear()
                 for text in page.text:
                     graphics.DrawText(offscreen_canvas, self._font, w_pos, text.h_pos, self._text_color, text.msg)
