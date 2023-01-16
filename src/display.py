@@ -29,7 +29,7 @@ class Display:
 
         while (start + self._duration) > datetime.utcnow():
             offscreen_canvas.Clear()
-            len = graphics.DrawText(offscreen_canvas, self._font, pos, 10, self._text_color, text)
+            len = graphics.DrawText(offscreen_canvas, self._font, pos, 7, self._text_color, text)
             pos -= 1
             if (pos + len) < 0:
                 pos = offscreen_canvas.width
@@ -56,7 +56,7 @@ class Display:
             flight_dict = {'origin': flight.origin_airport_name,
                            'dest': flight.destination_airport_name}
         flight_dict.update(post_dict)
-        h_pos = 0
+        h_pos = h_font_size
         for item in flight_dict.items():
             if item[1] != 'N/A':
                 h_pos += h_buffer
