@@ -1,7 +1,6 @@
 import asyncio
-import glob
+import logging
 from datetime import datetime, timedelta
-from src.show import Show
 from src.display import Display
 from src.flights import Flights
 from src.messages import Messages
@@ -9,6 +8,7 @@ from src.messages import Messages
 
 class Controller:
     def __init__(self) -> None:
+        self._logger = logging.getLogger(__name__)
         self._display = Display()
         self._msgs = Messages()
         self._flights = Flights(self._display)
@@ -16,6 +16,7 @@ class Controller:
         self._msg_wait = timedelta(minutes=15)
         self._last_poll_flight = datetime.utcnow() - self._flight_wait
         self._last_poll_msg = datetime.utcnow() - self._msg_wait
+        self._sleep_time = 60
 
     async def run(self):
         while True:
@@ -42,4 +43,4 @@ class Controller:
                         elif flight.type == 'content':
                             self._display.send_content(flight.value)
             else:
-                await asyncio.sleep(60)
+                await asyncio.sleep(self._sleep_time)

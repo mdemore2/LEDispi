@@ -1,12 +1,14 @@
-from rgbmatrix import RGBMatrix, RGBMatrixOptions, graphics
-from PIL import Image
-from datetime import datetime, timedelta
+import logging
 import time
 import os
+from datetime import datetime, timedelta
+from PIL import Image
+from rgbmatrix import RGBMatrix, RGBMatrixOptions, graphics
 
 
 class Display:
     def __init__(self):
+        self._logger = logging.getLogger(__name__)
         self._options = RGBMatrixOptions()
         self._options.rows = 32
         self._options.cols = 64
@@ -25,23 +27,23 @@ class Display:
 
         self._duration = timedelta(seconds=30)
 
-    def send_text(self, text: str):
+    def send_text(self, text: str) -> None:
         offscreen_canvas = self._matrix.CreateFrameCanvas()
         pos = offscreen_canvas.width
         start = datetime.utcnow()
 
         while (start + self._duration) > datetime.utcnow():
             offscreen_canvas.Clear()
-            len = graphics.DrawText(offscreen_canvas, self._font, pos, self._h_buffer, self._text_color, text)
+            length = graphics.DrawText(offscreen_canvas, self._font, pos, self._h_buffer, self._text_color, text)
             pos -= 1
-            if (pos + len) < 0:
+            if (pos + length) < 0:
                 pos = offscreen_canvas.width
 
             time.sleep(0.05)
             offscreen_canvas = self._matrix.SwapOnVSync(offscreen_canvas)
         self._matrix.Clear()
 
-    def send_content(self, content):
+    def send_content(self, content) -> None:
         offscreen_canvas = self._matrix.CreateFrameCanvas()
         con_dur = self._duration / len(content.pages)
         for page in content.pages:
@@ -70,7 +72,7 @@ class Display:
 
         self._matrix.Clear()
 
-    def send_image(self, path: str):
+    def send_image(self, path: str) -> None:
         image = Image.open(path)
         image.thumbnail((self._matrix.width, self._matrix.height), Image.ANTIALIAS)
         self._matrix.SetImage(image.convert('RGB'))
@@ -79,8 +81,3 @@ class Display:
             time.sleep(5)
         self._matrix.Clear()
         os.remove(path)
-        
-
-
-
-

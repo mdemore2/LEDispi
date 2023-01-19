@@ -1,3 +1,4 @@
+import logging
 from PIL import Image, ImageDraw, ImageFont
 import FlightRadar24.flight
 from FlightRadar24.api import FlightRadar24API
@@ -8,6 +9,7 @@ from src.config import bounds_str, airport_icao
 
 class Flights:
     def __init__(self, disp: Display):
+        self._logger = logging.getLogger(__name__)
         self._display = disp
         self._fr = FlightRadar24API()
         self._bounds = bounds_str
@@ -20,13 +22,19 @@ class Flights:
         self._font_color = (255, 243, 1)
         self._font = ImageFont.truetype('lib/Gidole-Regular.ttf', self._font_size)
 
-    def get_flights(self):
-        flights = self._fr.get_flights(bounds=self._bounds)
-        flights = [flights[0]] #TODO: remove after testing
+    def get_flights(self) -> list[Show] | None:
+        try:
+            flights = self._fr.get_flights(bounds=self._bounds)
+        except Exception as e:
+            self._logger.warning('FlightRadar error: %s', e)
+            return
         show_list = []
-        print(flights)
         for flight in flights:
-            details = self._fr.get_flight_details(flight.id)
+            try:
+                details = self._fr.get_flight_details(flight.id)
+            except Exception as e:
+                self._logger.warning('FlightRadar error: %s', e)
+                continue
             flight.set_flight_details(details)
             post_dict = {'arln': flight.airline_short_name,
                          'flt#': flight.number,
@@ -71,11 +79,12 @@ class Flights:
             im.paste(header, (int(self._img_width * 0.25), self._h_buffer))
 
             draw = ImageDraw.Draw(im)
-            h_pos = header.size[1] + self._h_buffer
+            # h_pos = header.size[1] + self._h_buffer
             h_pos = self._h_buffer
             for item in flight_dict.items():
                 h_pos += self._h_buffer
-                draw.text((self._w_buffer, h_pos), f"{item[0].upper()}:    {item[1]}", font=self._font, fill=self._font_color)
+                draw.text((self._w_buffer, h_pos), f"{item[0].upper()}:    {item[1]}", font=self._font,
+                          fill=self._font_color)
                 h_pos += self._font_size
             flight_num = flight.number.replace('/', '')
             path = f'images/{flight_num}.png'
@@ -83,4 +92,3 @@ class Flights:
             flight_imgs.append(Show('image', path))
 
         return flight_imgs
-

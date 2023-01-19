@@ -1,3 +1,4 @@
+import logging
 from collections import namedtuple
 from rgbmatrix import graphics, RGBMatrix
 
@@ -15,6 +16,7 @@ class Text:
 # new datatype -- page.text.h_pos page.text.w_len page.max_w_len page.max_h_pos
 class Content:
     def __init__(self, content: dict, canvas: RGBMatrix):
+        self._logger = logging.getLogger(__name__)
         self._canvas = canvas
         self._font = graphics.Font()
         self._font.LoadFont('rpi-rgb-led-matrix/fonts/7x13.bdf')
@@ -50,6 +52,3 @@ class Content:
                 h_pos += self._h_font_size + (2 * self._h_buffer)
 
         return cont_list
-
-
-
