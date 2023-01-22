@@ -57,7 +57,6 @@ python-magic==0.4.27
 pytz==2022.1
 PyYAML==5.4.1
 requests==2.25.1
-rgbmatrix @ file:///mnt/c/Users/markd/PycharmProjects/LEDispi/rpi-rgb-led-matrix/bindings/python
 SecretStorage==3.3.1
 service-identity==18.1.0
 six==1.16.0

@@ -11,7 +11,7 @@ class Messages:
         self._logger = logging.getLogger(__name__)
         self._pb = Pushbullet(pb_key)
 
-    def get_messages(self) -> list[Show] | None:
+    def get_messages(self):# -> list[Show] | None:
         try:
             pushes = self._pb.get_pushes()  # IF RECEIVING A FILE, MUST DOWNLOAD BEFORE DELETING
         except Exception as e:

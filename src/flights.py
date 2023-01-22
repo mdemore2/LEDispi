@@ -22,7 +22,7 @@ class Flights:
         self._font_color = (255, 243, 1)
         self._font = ImageFont.truetype('lib/Gidole-Regular.ttf', self._font_size)
 
-    def get_flights(self) -> list[Show] | None:
+    def get_flights(self):# -> list[Show] | None:
         try:
             flights = self._fr.get_flights(bounds=self._bounds)
         except Exception as e:

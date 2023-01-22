@@ -34,7 +34,7 @@ class Display:
 
         while (start + self._duration) > datetime.utcnow():
             offscreen_canvas.Clear()
-            length = graphics.DrawText(offscreen_canvas, self._font, pos, self._h_buffer, self._text_color, text)
+            length = graphics.DrawText(offscreen_canvas, self._font, pos, (self._h_buffer + self._h_font_size), self._text_color, text)
             pos -= 1
             if (pos + length) < 0:
                 pos = offscreen_canvas.width
